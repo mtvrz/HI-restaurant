@@ -1,35 +1,61 @@
 import classes from "./Slideshow.module.css";
-import slide from "../../store/slide_1.jpg"
-import slide2 from "../../store/slide_2.jpg"
-import slide3 from "../../store/slide_3.jpg"
-import {useEffect, useState} from "react";
+import React from 'react';
+import sundayImage from '../../store/logo.png';
+import mondayImage from '../../store/pondeli.JPG';
+import tuesdayImage from '../../store/utery.JPG';
+import wednesdayImage from '../../store/streda.JPG';
+import thursdayImage from '../../store/ctvrtek.JPG';
+import fridayImage from '../../store/patek.JPG';
+import saturdayImage from '../../store/logo.png';
 
-const Slideshow = () =>{
-    const images = [
-        slide,slide2,slide3
-    ];
-    const [currentIndex, setCurrentIndex] = useState(0);
+class Slideshow extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            images: [
+                sundayImage,
+                mondayImage,
+                tuesdayImage,
+                wednesdayImage,
+                thursdayImage,
+                fridayImage,
+                saturdayImage
+            ],
+            currentImageIndex: new Date().getDay()
+        };
+    }
 
-    useEffect(() => {
-        const intervalId = setInterval(() => {
-            setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-        }, 15000);
+    componentDidMount() {
+        // Set interval to refresh the page every one hour
+        this.refreshInterval = setInterval(this.refreshPage,  60 * 60 * 1000);
+    }
 
-        return () => clearInterval(intervalId);
-    }, []);
+    componentWillUnmount() {
+        // Clear the interval when the component is unmounted
+        clearInterval(this.refreshInterval);
+    }
 
-    const goToPrevSlide = () => {
-        setCurrentIndex((prevIndex) => (prevIndex - 1 + images.length) % images.length);
-
+    refreshPage = () => {
+        window.location.reload();
     };
 
-    return <div className={classes.slide}>
-            <img
-                src={images[currentIndex]}
-                alt={`Slide ${currentIndex + 1}`}
-                className={classes.slideImage}
-            />
-    </div>
+
+    nextImage = () => {
+        this.setState(prevState => ({
+            currentImageIndex: (prevState.currentImageIndex + 1) % this.state.images.length
+        }));
+    };
+
+    render() {
+        const { images, currentImageIndex } = this.state;
+        const currentImage = images[currentImageIndex];
+        console.log(currentImageIndex)
+        return (
+            <div style={{ width: '100%', height: '100%', overflow: 'hidden' }}>
+                <img src={currentImage} alt="Slideshow" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+        );
+    }
 }
 
-export default Slideshow
+export default Slideshow;
